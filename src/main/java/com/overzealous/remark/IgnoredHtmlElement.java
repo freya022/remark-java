@@ -25,9 +25,9 @@ import java.util.Set;
  */
 public class IgnoredHtmlElement {
 
-	private String tagName;
+	private final String tagName;
 
-	private Set<String> attributes;
+	private final Set<String> attributes;
 
 	/**
 	 * Create a new IgnoredHtmlElement.  The tagname may also be referred to as the NodeName.
@@ -36,7 +36,7 @@ public class IgnoredHtmlElement {
 	 */
 	public IgnoredHtmlElement(String tagName) {
 		this.tagName = tagName;
-		this.attributes = new HashSet<String>();
+		this.attributes = new HashSet<>();
 	}
 
 	/**

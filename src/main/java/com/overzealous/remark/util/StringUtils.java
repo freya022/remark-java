@@ -135,11 +135,7 @@ public class StringUtils {
 		if(count < 1) {
 			return "";
 		} else {
-			StringBuilder sb = new StringBuilder();
-			for(int i=0; i<count; i++) {
-				sb.append(s);
-			}
-			return sb.toString();
+			return String.valueOf(s).repeat(count);
 		}
 	}
 

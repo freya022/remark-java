@@ -18,16 +18,11 @@ package com.overzealous.remark.convert;
 
 import org.jsoup.nodes.Element;
 
-import java.util.regex.Pattern;
-
 /**
  * Handles anchor (a) tags, both links and named anchors.
  * @author Phil DeJarnett
  */
 public class Anchor extends AbstractNodeHandler {
-
-	private static final Pattern INLINE_LINK_ESCAPE = Pattern.compile("([\\(\\)])");
-	private static final String INLINE_LINK_REPLACEMENT = "\\\\$1";
 
 	/**
 	 * Creates a link reference, and renders the correct output.

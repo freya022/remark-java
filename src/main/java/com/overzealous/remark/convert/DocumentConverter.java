@@ -57,7 +57,7 @@ public class DocumentConverter {
 
 	private static final Pattern COMMA = Pattern.compile(",");
 	private static final Pattern LINK_MULTIPLE_SPACES = Pattern.compile(" {2,}", Pattern.DOTALL);
-	private static final Pattern LINK_SAFE_CHARS = Pattern.compile("[^-\\w \\.]+", Pattern.DOTALL);
+	private static final Pattern LINK_SAFE_CHARS = Pattern.compile("[^-\\w .]+", Pattern.DOTALL);
 	private static final String LINK_REPLACEMENT = "_";
 	private static final Pattern LINK_EDGE_REPLACE = Pattern.compile(String.format("(^%1$s++)|(%1$s++$)", LINK_REPLACEMENT));
 	private static final Pattern LINK_MULTIPLE_REPLACE = Pattern.compile(String.format("%1$s{2,}", LINK_REPLACEMENT));
@@ -72,9 +72,9 @@ public class DocumentConverter {
 		// configure final properties
 		this.options = options;
 		cleaner = new TextCleaner(options);
-		ignoredHtmlTags = new HashSet<String>();
-		blockNodes = new HashMap<String, NodeHandler>();
-		inlineNodes = new HashMap<String, NodeHandler>();
+		ignoredHtmlTags = new HashSet<>();
+		blockNodes = new HashMap<>();
+		inlineNodes = new HashMap<>();
 
 		// configure ignored tags
 		for(final IgnoredHtmlElement ihe : options.getIgnoredHtmlElements()) {
@@ -251,13 +251,13 @@ public class DocumentConverter {
 	private void convertImpl(Document doc) {
 		
 		// linked, because we want the resulting list of links in order they were added
-		linkIds = new LinkedHashMap<String, String>();
+		linkIds = new LinkedHashMap<>();
 		// To keep track of already added URLs
-		linkUrls = new HashMap<String, String>();
+		linkUrls = new HashMap<>();
 		genericImageUrlCounter = 0;
 		genericLinkUrlCounter = 0;
 		// linked, to keep abbreviations in the order they were added
-		abbreviations = new LinkedHashMap<String, String>();
+		abbreviations = new LinkedHashMap<>();
 
 		lastNodeset = blockNodes;
 
@@ -313,9 +313,8 @@ public class DocumentConverter {
 				// It's just text!
 				currentNodeHandler.handleTextNode((TextNode) n, this);
 
-			} else if(n instanceof Element) {
+			} else if(n instanceof Element node) {
 				// figure out who can handle this
-				Element node = (Element)n;
 				String tagName = node.tagName();
 
 				if(nodeList.containsKey(tagName)) {
@@ -388,7 +387,7 @@ public class DocumentConverter {
 			linkId = linkUrls.get(url);
 		} else {
 			if(options.simpleLinkIds) {
-				linkId = (image ? "image-" : "") + String.valueOf(linkUrls.size()+1);
+				linkId = (image ? "image-" : "") + (linkUrls.size() + 1);
 			} else {
 				recommendedName = cleanLinkId(url, recommendedName, image);
 				if(linkIds.containsKey(recommendedName)) {

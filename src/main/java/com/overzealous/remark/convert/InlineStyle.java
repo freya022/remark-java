@@ -101,7 +101,7 @@ public class InlineStyle extends AbstractNodeHandler {
 	/**
 	 * Minor class to hold onto the styling rules for this class.
 	 */
-	private class Rules {
+	private static class Rules {
 		boolean emphasisPreserved = true;
 		boolean addSpacing = false;
 		boolean italics = false;
@@ -191,8 +191,7 @@ public class InlineStyle extends AbstractNodeHandler {
 		if(!iwe.isEmphasisPreserved() || iwe.isAdditionalSpacingNeeded()) {
 			// peek behind for inline styling
 			Node n = node.previousSibling();
-			if(n != null && n instanceof TextNode) {
-				TextNode tn = (TextNode)n;
+			if(n instanceof TextNode tn) {
 				String text = tn.text();
 				if(INWORD_CHARACTER.matcher(text.substring(text.length()-1)).matches()) {
 					result.emphasisPreserved = iwe.isEmphasisPreserved();
@@ -201,8 +200,7 @@ public class InlineStyle extends AbstractNodeHandler {
 			}
 			// peek ahead for inline styling
 			n = node.nextSibling();
-			if(n != null && n instanceof TextNode) {
-				TextNode tn = (TextNode)n;
+			if(n instanceof TextNode tn) {
 				if(INWORD_CHARACTER.matcher(tn.text().substring(0,1)).matches()) {
 					result.emphasisPreserved = iwe.isEmphasisPreserved();
 					result.addSpacing = iwe.isAdditionalSpacingNeeded();
@@ -222,26 +220,35 @@ public class InlineStyle extends AbstractNodeHandler {
 	 */
 	private void checkTag(Element node, Rules rules) {
 		String tn = node.tagName();
-		if(tn.equals("i") || tn.equals("em")) {
-			rules.italics = (italicDepth == 0);
-		} else if(tn.equals("b") || tn.equals("strong")) {
-			rules.bold = (boldDepth == 0);
-		} else if (tn.equals("s") || tn.equals("strike") || tn.equals("del")) {
-			rules.strikeThrough = (strikeThroughDepth == 0);
-		} else {
-			// check inline-style
-			if(node.hasAttr("style")) {
-				String style = node.attr("style");
-				if(ITALICS_PATTERN.matcher(style).find()) {
-					rules.italics = (italicDepth == 0);
+		switch (tn) {
+			case "i":
+			case "em":
+				rules.italics = (italicDepth == 0);
+				break;
+			case "b":
+			case "strong":
+				rules.bold = (boldDepth == 0);
+				break;
+			case "s":
+			case "strike":
+			case "del":
+				rules.strikeThrough = (strikeThroughDepth == 0);
+				break;
+			default:
+				// check inline-style
+				if (node.hasAttr("style")) {
+					String style = node.attr("style");
+					if (ITALICS_PATTERN.matcher(style).find()) {
+						rules.italics = (italicDepth == 0);
+					}
+					if (BOLD_PATTERN.matcher(style).find()) {
+						rules.bold = (boldDepth == 0);
+					}
+					if (STRIKE_THROUGH_PATTERN.matcher(style).find()) {
+						rules.strikeThrough = (strikeThroughDepth == 0);
+					}
 				}
-				if(BOLD_PATTERN.matcher(style).find()) {
-					rules.bold = (boldDepth == 0);
-				}
-				if(STRIKE_THROUGH_PATTERN.matcher(style).find()) {
-					rules.strikeThrough = (strikeThroughDepth == 0);
-				}
-			}
+				break;
 		}
 	}
 

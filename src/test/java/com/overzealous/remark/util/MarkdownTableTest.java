@@ -103,7 +103,6 @@ public class MarkdownTableTest {
 
 	private String getTableString(MarkdownTable mt, boolean allowColSpan, boolean renderAsCode) {
 		StringWriter sw = new StringWriter();
-		//noinspection IOResourceOpenedButNotSafelyClosed
 		mt.renderTable(new PrintWriter(sw), allowColSpan, renderAsCode);
 		return '\n' + sw.toString();
 	}

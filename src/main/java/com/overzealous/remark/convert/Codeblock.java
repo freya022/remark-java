@@ -49,12 +49,11 @@ public class Codeblock extends AbstractNodeHandler {
 			out.write(converter.cleaner.cleanCode(node));
 			out.println();
 			out.print(fence);
-			converter.output.endBlock();
 		} else {
 			converter.output.startBlock();
 			out = new BlockWriter(converter.output).setPrependNewlineString("    ");
 			out.write(converter.cleaner.cleanCode(node));
-			converter.output.endBlock();
 		}
+		converter.output.endBlock();
 	}
 }

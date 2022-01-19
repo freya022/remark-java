@@ -16,9 +16,6 @@
 
 package com.overzealous.remark.convert;
 
-import com.overzealous.remark.IgnoredHtmlElement;
-import com.overzealous.remark.Options;
-import com.overzealous.remark.Remark;
 import org.junit.Test;
 
 /**

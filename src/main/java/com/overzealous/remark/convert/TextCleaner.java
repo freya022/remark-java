@@ -40,7 +40,7 @@ public class TextCleaner {
 	/**
 	 * Internal class simply used to hold the various escape regexes.
 	 */
-	private class Escape {
+	private static class Escape {
 		final Pattern pattern;
 		final String replacement;
 		public Escape(String pattern, String replacement) {
@@ -62,7 +62,7 @@ public class TextCleaner {
 	private static final Pattern EMPTY_MATCHER = Pattern.compile("\\s+", Pattern.DOTALL);
 	private static final Pattern LINEBREAK_REMOVER = Pattern.compile("(\\s*\\r?+\\n)+");
 	
-	private static final Pattern URL_CLEANER = Pattern.compile("([\\(\\) ])");
+	private static final Pattern URL_CLEANER = Pattern.compile("([() ])");
 
 	/**
 	 * Create a new TextCleaner based on the configured options.
@@ -79,10 +79,10 @@ public class TextCleaner {
 	 */
 	@SuppressWarnings({"OverlyLongMethod"})
 	private void setupReplacements(Options options) {
-		this.replacements = new HashMap<String, String> ();
+		this.replacements = new HashMap<>();
 
 		// build replacement regex
-		StringBuilder entities = new StringBuilder(replacements.size()*5);
+		StringBuilder entities = new StringBuilder(0);
 
 		// this is a special case for double-encoded HTML entities.
 		entities.append("&(?>amp;([#a-z0-9]++;)|(?>");
@@ -93,9 +93,9 @@ public class TextCleaner {
 		if(options.reverseHtmlSmartQuotes) {
 			addRepl(entities, "&ldquo;", "\"");
 			addRepl(entities, "&rdquo;", "\"");
-			addRepl(entities, "&lsquo;", "\'");
-			addRepl(entities, "&rsquo;", "\'");
-			addRepl(entities, "&apos;", "\'");
+			addRepl(entities, "&lsquo;", "'");
+			addRepl(entities, "&rsquo;", "'");
+			addRepl(entities, "&apos;", "'");
 			addRepl(entities, "&laquo;", "<<");
 			addRepl(entities, "&raquo;", ">>");
 		}
@@ -113,8 +113,8 @@ public class TextCleaner {
 			if(options.reverseUnicodeSmartQuotes) {
 				addRepl(unicode, "\u201c", "\""); // left double quote: “
 				addRepl(unicode, "\u201d", "\""); // right double quote: ”
-				addRepl(unicode, "\u2018", "\'"); // left single quote: ‘
-				addRepl(unicode, "\u2019", "\'"); // right single quote: ’
+				addRepl(unicode, "\u2018", "'"); // left single quote: ‘
+				addRepl(unicode, "\u2019", "'"); // right single quote: ’
 				addRepl(unicode, "\u00ab", "<<"); // left angle quote: «
 				addRepl(unicode, "\u00bb", ">>"); // right angle quote: »
 			}
@@ -138,7 +138,7 @@ public class TextCleaner {
 		replacements.put(original, replacement);
 		if(original.charAt(0) == '&') {
 			// add entity
-			regex.append(original.substring(1, original.length() - 1));
+			regex.append(original, 1, original.length() - 1);
 			regex.append('|');
 		} else {
 			// add single character
@@ -151,7 +151,7 @@ public class TextCleaner {
 	 * @param options Options that will affect what is escaped.
 	 */
 	private void setupEscapes(Options options) {
-		escapes = new ArrayList<Escape>();
+		escapes = new ArrayList<>();
 
 		// confusingly, this replaces single backslashes with double backslashes.
 		// Man, I miss Groovy's slashy strings in these moments...
@@ -291,12 +291,8 @@ public class TextCleaner {
 			String repString;
 			// if we have a hard match, do a simple replacement.
 			String replacementKey = m.group().toLowerCase(Locale.ENGLISH);
-			if(replacements.containsKey(replacementKey)) {
-				repString = replacements.get(replacementKey);
-			} else {
-				// special case for escaped HTML entities.
-				repString = "\\\\&$1";
-			}
+			// special case for escaped HTML entities.
+			repString = replacements.getOrDefault(replacementKey, "\\\\&$1");
 			m.appendReplacement(output, repString);
 		}
 		m.appendTail(output);
@@ -351,7 +347,7 @@ public class TextCleaner {
 	 * @return Cleaned URL
 	 */
 	public String cleanUrl(String input) {
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 
 		Matcher m = URL_CLEANER.matcher(input);
 		while (m.find()) {
@@ -387,8 +383,7 @@ public class TextCleaner {
 			input = ltrim(input);
 		} else if(prev == null && parentIsBlock) {
 			input = ltrim(input);
-		} else if(normalText && prev instanceof TextNode) {
-			TextNode tprev = (TextNode)prev;
+		} else if(normalText && prev instanceof TextNode tprev) {
 			if(EMPTY_MATCHER.matcher(tprev.text()).matches()) {
 				input = ltrim(input);
 			}
@@ -398,8 +393,7 @@ public class TextCleaner {
 				input = rtrim(input);
 			} else if(next == null && parentIsBlock) {
 				input = rtrim(input);
-			} else if(normalText && next instanceof TextNode) {
-				TextNode tnext = (TextNode)next;
+			} else if(normalText && next instanceof TextNode tnext) {
 				if(EMPTY_MATCHER.matcher(tnext.text()).matches()) {
 					input = rtrim(input);
 				}
@@ -410,8 +404,7 @@ public class TextCleaner {
 
 	private boolean isBlock(Node n) {
 		boolean block = false;
-		if(n != null && n instanceof Element) {
-			Element el = (Element)n;
+		if(n instanceof Element el) {
 			block = el.isBlock() || el.tagName().equals("br");
 		}
 		return block;

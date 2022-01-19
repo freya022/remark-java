@@ -71,7 +71,6 @@ public final class BlockWriter extends PrintWriter {
 
 	// handles the actual setting up of the buffer
 	private static BlockWriter create(StringWriter buffer) {
-		@SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
 		BlockWriter bw = new BlockWriter(buffer);
 		bw.buffer = buffer;
 		return bw;
@@ -103,7 +102,7 @@ public final class BlockWriter extends PrintWriter {
     }
 
     @Override
-	public void write(char cbuf[], int off, int len) {
+	public void write(char[] cbuf, int off, int len) {
 		if(len == 0) {
 			return;
 		}
@@ -116,7 +115,7 @@ public final class BlockWriter extends PrintWriter {
     }
 
 	// writes a character buffer while prepending lines
-	private void writePrepended(char cbuf[], int off, int len) {
+	private void writePrepended(char[] cbuf, int off, int len) {
 		prependingLock.lock();
 		try {
 			// keep track of what needs to be added

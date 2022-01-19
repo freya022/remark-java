@@ -35,11 +35,8 @@ public class Image extends AbstractNodeHandler {
 	public void handleNode(NodeHandler parent, Element node, DocumentConverter converter) {
 		String url = converter.cleaner.cleanUrl(node.attr("src"));
 		String alt = node.attr("alt");
-		if(alt == null || alt.trim().length() == 0) {
+		if(alt.trim().length() == 0) {
 			alt = node.attr("title");
-			if(alt == null) {
-				alt = "";
-			}
 		}
 		alt = converter.cleaner.clean(alt.trim());
 		if(converter.options.inlineLinks) {
